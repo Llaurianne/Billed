@@ -1,0 +1,14 @@
+# Editor directories and files
+.idea
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# 
+Billed-app-FR-Back/database_test.sqlite
+Billed-app-FR-Back/node_modules/
+Billed-app-FR-Back/coverage/
+Billed-app-FR-Front/node_modules/
+Billed-app-FR-Front/coverage/
