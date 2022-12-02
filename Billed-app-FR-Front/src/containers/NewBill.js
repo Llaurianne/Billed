@@ -1,5 +1,6 @@
 import { ROUTES_PATH } from '../constants/routes.js'
 import Logout from "./Logout.js"
+import errorPage from "../views/ErrorPage.js";
 
 export default class NewBill {
   constructor({ document, onNavigate, store, localStorage }) {
@@ -24,21 +25,26 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
-
-    this.store
-      .bills()
-      .create({
-        data: formData,
-        headers: {
-          noContentType: true
-        }
-      })
-      .then(({fileUrl, key}) => {
-        console.log(fileUrl)
-        this.billId = key
-        this.fileUrl = fileUrl
-        this.fileName = fileName
-      }).catch(error => console.error(error))
+    // Ajout d'une condition sur l'extension du fichier
+    if (fileName.split('.')[1].toLowerCase() === ('jpg' || 'jpeg' || 'png')) {
+      this.store
+        .bills()
+        .create({
+          data: formData,
+          headers: {
+            noContentType: true
+          }
+        })
+        .then(({fileUrl, key}) => {
+          console.log(fileUrl)
+          this.billId = key
+          this.fileUrl = fileUrl
+          this.fileName = fileName
+        })
+        .catch(error => console.error(error))
+    } else {
+      this.document.querySelector(`input[data-testid="file"]`).value = ''
+    }
   }
   handleSubmit = e => {
     e.preventDefault()
