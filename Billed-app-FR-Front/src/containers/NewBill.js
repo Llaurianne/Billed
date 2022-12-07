@@ -25,6 +25,7 @@ export default class NewBill {
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
     formData.append('email', email)
+    //Correction : Bug hunt Bills
     // Ajout d'une condition sur l'extension du fichier
     if (fileName.split('.')[1].toLowerCase() === ('jpg' || 'jpeg' || 'png')) {
       this.store
