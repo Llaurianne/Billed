@@ -17,7 +17,7 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    e.preventDefault()
+    //e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
@@ -26,8 +26,7 @@ export default class NewBill {
     formData.append('file', file)
     formData.append('email', email)
     //Correction : Bug hunt Bills
-    // Ajout d'une condition sur l'extension du fichier
-    if (fileName.split('.')[1].toLowerCase() === ('jpg' || 'jpeg' || 'png')) {
+    if (this.fileValidation(file)) {
       this.store
         .bills()
         .create({
@@ -47,6 +46,12 @@ export default class NewBill {
       this.document.querySelector(`input[data-testid="file"]`).value = ''
     }
   }
+  // Ajout d'une condition sur l'extension du fichier
+  fileValidation = file => {
+    const mimeTypes = ["image/jpeg", "image/jpg", "image/png"];
+    return (mimeTypes.includes(file.type))
+  };
+
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)

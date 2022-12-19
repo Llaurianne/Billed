@@ -16,7 +16,7 @@ import router from "../app/Router.js";
 import mockStore from "../__mocks__/store.js";
 
 describe("Given I am connected as an employee", () => {
-  beforeEach(() => {
+  beforeAll(() => {
     // Mock de localStorage
     Object.defineProperty(window, 'localStorage', {value: localStorageMock})
     window.localStorage.setItem('user', JSON.stringify({
