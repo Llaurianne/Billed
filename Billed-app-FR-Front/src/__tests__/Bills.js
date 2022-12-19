@@ -16,12 +16,13 @@ import router from "../app/Router.js";
 import mockStore from "../__mocks__/store.js";
 
 describe("Given I am connected as an employee", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     // Mock de localStorage
     Object.defineProperty(window, 'localStorage', {value: localStorageMock})
     window.localStorage.setItem('user', JSON.stringify({
       type: 'Employee'
     }))
+    document.body.innerHTML = ''
   })
   // Ajout de série de tests get
   describe("When I navigate to Bills page", () => {
@@ -40,6 +41,12 @@ describe("Given I am connected as an employee", () => {
   })
   describe("When an error occurs on API", () => {
     beforeEach(() => {
+      // Navigation vers la page Bills
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
       // Permet d'utiliser mockImplementation
       jest.spyOn(mockStore, "bills")
     })
@@ -108,6 +115,8 @@ describe("Given I am connected as an employee", () => {
       const onNavigate = pathname => {
         document.body.innerHTML = ROUTES({ pathname });
       };
+      // Injection du HTML avec des données mockées de notes de frais
+      document.body.innerHTML = BillsUI({data: bills})
       // Création d'une instance de Bills afin d'appliquer la fonction handleClickIconEye
       const newBills = new Bills({document, onNavigate, localStorage: window.localStorage, store: mockStore });
       // Sélection des icones eye
@@ -129,14 +138,16 @@ describe("Given I am connected as an employee", () => {
   // Ajout de test de la fonction handleClickNewBill
   describe("when I am on Bills page and I click on 'Nouvelle note de frais'", () => {
     test("Then I should be sent the the new bill page", async () => {
-      // Sélection du bouton "Nouvelle note de frais"
-      const newBillBtn = screen.getByTestId('btn-new-bill')
       // Version mockée de la fonction de navigation
       const onNavigate = (pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       };
+      // Injection du HTML avec des données mockées de notes de frais
+      document.body.innerHTML = BillsUI({data: bills})
       // Création d'une instance de Bills afin d'appliquer la fonction handleClickNewBill
       const newBills = new Bills({document, onNavigate, localStorage: window.localStorage, store: null})
+      // Sélection du bouton "Nouvelle note de frais"
+      const newBillBtn = screen.getByTestId('btn-new-bill')
       newBillBtn.addEventListener('click', newBills.handleClickNewBill)
       // Click sur le bouton "Nouvelle note de frais"
       fireEvent.click(newBillBtn)

@@ -1,10 +1,12 @@
 /**
  * @jest-environment jsdom
  */
-require('jest-fetch-mock').enableMocks()
-import { screen, waitFor, fireEvent } from "@testing-library/dom"
+
+require('jest-fetch-mock').enableMocks();
+import { screen, waitFor, fireEvent } from "@testing-library/dom";
 import {beforeAll, beforeEach} from '@jest/globals';
-import NewBill from "../containers/NewBill.js"
+import NewBill from "../containers/NewBill.js";
+import NewBillUI from "../views/NewBillUI.js";
 import {localStorageMock} from "../__mocks__/localStorage.js";
 import mockStore from "../__mocks__/store.js";
 import router from "../app/Router.js";
@@ -21,27 +23,23 @@ describe("Given I am connected as an employee", () => {
   })
   describe("When I am on NewBill Page", () => {
     beforeEach(() => {
-      // Navigation vers la page NewBill
       document.body.innerHTML = ''
-      const root = document.createElement("div")
-      root.setAttribute("id", "root")
-      document.body.append(root)
-      router()
-      window.onNavigate(ROUTES_PATH.NewBill)
     })
-    test("Then the vertical layout should be displayed with the logo", async () => {
-      await waitFor(() => screen.getByText('Billed'))
+    test("Then the vertical layout should be displayed with the logo", () => {
+      // Instanciation d'une nouvelle vue de NewBill
+      const html = NewBillUI()
+      document.body.innerHTML = html
       // Vérification affichage du bandeau vertical
       const verticalLayout = document.querySelector('.vertical-navbar')
       expect(verticalLayout).toBeTruthy()
-      // Mock de fetch pour éviter les erreurs dans le rapport de test
-      fetch.mockResponse(JSON.stringify({'body':' '}))
       // Vérification affichage du logo Billed
       const billed = screen.getByText('Billed')
       expect(billed).toBeTruthy()
     })
-    test("Then page title and the form should be displayed", async () => {
-      await waitFor(() => screen.getAllByTestId('form-new-bill'))
+    test("Then page title and the form should be displayed", () => {
+      // Instanciation d'une nouvelle vue de NewBill
+      const html = NewBillUI()
+      document.body.innerHTML = html
       // Vérification affichage du titre
       const title = screen.getAllByText('Envoyer une note de frais')
       expect(title).toBeTruthy()
@@ -50,14 +48,27 @@ describe("Given I am connected as an employee", () => {
       expect(form).toBeTruthy()
     })
     test("Then mail icon in vertical layout should be highlighted", async () => {
+      // Navigation vers la page NewBill
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.NewBill)
       await waitFor(() => screen.getByTestId('icon-mail'))
       // Vérification présence de la classe 'active-icon' sur l'icone 'icon-mail'
       const mailIcon = screen.getByTestId('icon-mail')
       expect(mailIcon.classList).toContain('active-icon')
     })
+
     // Test de la fonction handleChangeFile
     describe("When I add a file with a correct extension", () => {
       test("Then the file input should add the file to its FilesList calling handleChangeFile", async () => {
+        // Navigation vers la page NewBill
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+        window.onNavigate(ROUTES_PATH.NewBill)
         // Instanciation de newBill
         const newBill = new NewBill({document, onNavigate, localStorage: window.localStorage, store: mockStore });
         // Mock de la fonction handleChangeFile
@@ -68,6 +79,8 @@ describe("Given I am connected as an employee", () => {
         const fileValidation = jest.spyOn(newBill, "fileValidation");
         // Création d'un nouvel objet de type File
         const newFile = new File(["image"], "image.jpg", {type: "image/jpg",})
+        // Mock de fetch pour éviter les erreurs dans le rapport de test
+        fetch.mockResponse(JSON.stringify({'body':' '}))
         // Ajout d'un évènement déclanchant la fonction
         imageInput.addEventListener("change", handleChangeFile);
         fireEvent.change(imageInput, {target: {files: [newFile]}});
@@ -78,6 +91,12 @@ describe("Given I am connected as an employee", () => {
     })
     describe("When I add a file with a wrong extension", () => {
       test("Then the file input should add the file to its FilesList calling handleChangeFile", async () => {
+        // Navigation vers la page NewBill
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+        window.onNavigate(ROUTES_PATH.NewBill)
         // Instanciation de newBill
         const newBill = new NewBill({document, onNavigate, localStorage: window.localStorage, store: mockStore });
         // Mock de la fonction handleChangeFile
@@ -88,15 +107,25 @@ describe("Given I am connected as an employee", () => {
         const fileValidation = jest.spyOn(newBill, "fileValidation");
         // Création d'un nouvel objet de type File
         const newFile = new File(["document"], "image.pdf", {type: "application/pdf",})
+        // Mock de fetch pour éviter les erreurs dans le rapport de test
+        fetch.mockResponse(JSON.stringify({'body':' '}))
+        // Ajout d'un évènement déclanchant la fonction
         imageInput.addEventListener("change", handleChangeFile);
         fireEvent.change(imageInput, {target: {files: [newFile]}});
         expect(handleChangeFile).toHaveBeenCalledTimes(1);
         expect(fileValidation(newFile)).toEqual(false);
       })
     })
+
     // Test de la fonction handleSubmit
     describe("When I complete correctly every input and I click on submit", () => {
       test("Then I should be sent back the the bills page", () => {
+        // Navigation vers la page NewBill
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.append(root)
+        router()
+        window.onNavigate(ROUTES_PATH.NewBill)
          // Instanciation de newBill
         const onNavigate = pathname => {
           document.body.innerHTML = ROUTES({ pathname });
